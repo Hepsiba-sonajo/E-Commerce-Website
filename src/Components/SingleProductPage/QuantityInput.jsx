@@ -1,17 +1,27 @@
-import React from 'react'
-import "./QuantityInput.css"
+import React from "react";
 
-const QuantityInput = () => {
-  return (
-    
-    <>
-        <button className='quantity_input_button' disabled>
-                {""} - {""}
+import "./QuantityInput.css";
+
+const QuantityInput = ({ quantity, setQuantity, stock }) => {
+    return (
+        <>
+            <button
+                className='quantity_input_button'
+                disabled={quantity <= 1}
+                onClick={() => setQuantity(quantity - 1)}>
+                {" "}
+                -{" "}
             </button>
-            <p className='quantity_input_count'>1</p>
-            <button className='quantity_input_button'> + </button>
-    </>
-  )
-}
+            <p className='quantity_input_count'>{quantity}</p>
+            <button
+                className='quantity_input_button'
+                disabled={quantity >= stock}
+                onClick={() => setQuantity(quantity + 1)}>
+                {" "}
+                +{" "}
+            </button>
+        </>
+    );
+};
 
-export default QuantityInput
+export default QuantityInput;
