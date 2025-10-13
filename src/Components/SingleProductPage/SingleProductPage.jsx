@@ -1,21 +1,27 @@
-import React, { useState } from "react";
+import React, { useState ,useContext} from "react";
 
 import "./SingleProductPage.css";
 import QuantityInput from "./QuantityInput";
 import { useParams } from "react-router-dom";
-import useData from "../../hooks/useData";
 import Loader from "./../Common/Loader";
+import useData from "../../hooks/useData";
+import UserContext from "../../contexts/userContext";
+import CartContext from "../../contexts/CartContext";
+
 
 const SingleProductPage = () => {
+   
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
+     const {addToCart} = useContext(CartContext);
+       const user = useContext(UserContext);
     const { id } = useParams();
 
-    const { data: product, error, isLoading } = useData(`/products/${id}`);
+    const { data: product, error, loading } = useData(`/products/${id}`);
     return (
         <section className='align_center single_product'>
             {error && <em className='form_error'>{error}</em>}
-            {isLoading && <Loader />}
+            {loading && <Loader />}
             {product && (
                 <>
                     <div className='align_center'>
@@ -52,6 +58,8 @@ const SingleProductPage = () => {
                             ${product.price.toFixed(2)}
                         </p>
 
+                 {user && 
+                            <>
                         <h2 className='quantity_title'>Quantity:</h2>
                         <div className='align_center quantity_input'>
                             <QuantityInput
@@ -61,9 +69,11 @@ const SingleProductPage = () => {
                             />
                         </div>
 
-                        <button className='search_button add_cart'>
+                        <button className='search_button add_cart' onClick={() => addToCart(product,quantity)}>
                             Add to Cart
                         </button>
+                        </>
+                    }
                     </div>
                 </>
             )}

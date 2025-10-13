@@ -4,6 +4,9 @@ import user from "../../assets/user.webp";
 import { useForm } from "react-hook-form";
 import {z} from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {getUser, signup} from "../../services/userServices";
+import { Navigate } from "react-router-dom";
+
 
 const schema = z.object({
     name: z
@@ -26,9 +29,29 @@ const schema = z.object({
 
 const SignupPage = () => {
  const [profilePic, setProfilePic] = useState(null);
-const{register,handleSubmit,formState: {errors}} = useForm({resolver : zodResolver(schema)});
+ const [formError, setFormError] = useState("");
 
-const onSubmit = (formData) => console.log(formData)
+
+
+ const{register,handleSubmit,formState: {errors}} = useForm({resolver : zodResolver(schema)});
+
+const onSubmit = async (formData) => {
+         try {
+           await signup(formData, profilePic);
+            
+
+      window.location = "/"
+            
+        } catch (err) {
+            if (err.response && err.response.status === 400) {
+                setFormError(err.response.data.message);
+            }
+        }
+    };
+
+    if (getUser()) {
+    return <Navigate to="/" />
+   }
     return (
         <section className='align_center form_page'>
             <form className='authentication_form signup_form' onSubmit={handleSubmit(onSubmit)}>
@@ -111,7 +134,7 @@ const onSubmit = (formData) => console.log(formData)
                         {errors.address && ( <em className='form_error'>{errors.address.message}</em>) }
                     </div>
                 </div>
-
+        {formError && <em className='form_error'>{formError}</em>}
                 <button className='search_button form_submit' type='submit'>
                     Submit
                 </button>
